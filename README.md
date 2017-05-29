@@ -1,2 +1,2 @@
 # ¿Dónde invierto?
-# Diseño de Sistemas, 2017
+Diseño de Sistemas, 2017
