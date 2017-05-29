@@ -1,2 +1,2 @@
-# integrador
-¿Dónde invierto?
+# ¿Dónde invierto?
+# Diseño de Sistemas, 2017
