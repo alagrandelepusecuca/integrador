@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 
 class Empresa {
     private String nombre;
@@ -10,11 +11,11 @@ class Empresa {
 
     void agregarCuenta(Cuenta c) { cuentas.add(c); }
 
-    ArrayList<Cuenta> obtenerCuentasDelPeríodo(short y) {
-        ArrayList<Cuenta> cuentasDelPeríodo = new ArrayList<>();
+    HashMap<String, Cuenta> obtenerCuentasDelPeríodo(Short period) {
+        HashMap<String, Cuenta> cuentasDelPeríodo = new HashMap<>();
         for (Cuenta c : cuentas)
-            if (c.getPeríodo() == y)
-                cuentasDelPeríodo.add(c);
+            if (c.getPeriod().equals(period))
+                cuentasDelPeríodo.put(c.getNombre(), c);
         return cuentasDelPeríodo;
     }
 }

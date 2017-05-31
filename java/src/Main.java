@@ -5,13 +5,14 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 class Main {
+    private HashSet<Short> períodos = new HashSet<>();
     private HashMap<String, Empresa> empresas = new HashMap<>();
-    private ArrayList<Indicador> indicadores = new ArrayList<>();
-    private ArrayList<Metodología> metodologías = new ArrayList<>();
+    private HashMap<String, Indicador> indicadores = new HashMap<>();
+    private HashMap<String, Metodología> metodologías = new HashMap<>();
 
     public static void main(String[] args) {
         Main m = new Main();
@@ -19,14 +20,25 @@ class Main {
     }
 
     private void run() {
-        cargarDatos("cuentas.xlsx");
+        cargarDatos();
+        agregarIndicador("INET", "INOC+INOD");
+        agregarIndicador("ROE", "(INET-DVD)/CAPT");
+        Empresa e = empresas.entrySet().iterator().next().getValue();
+        Indicador i = indicadores.get("INET");
+        i.calcularValor(e.obtenerCuentasDelPeríodo((short) 2014));
+        assert (i.valida());
     }
 
-    private void cargarDatos(String path) {
+    private void agregarIndicador(String nombre, String formula) {
+        Indicador i = new Indicador(nombre, formula);
+        indicadores.put(i.getNombre(), i);
+    }
+
+    private void cargarDatos() {
         XSSFWorkbook wb;
         Sheet s = null;
         try {
-            InputStream inp = new FileInputStream(path);
+            InputStream inp = new FileInputStream("cuentas.xlsx");
             wb = new XSSFWorkbook(inp);
             s = wb.getSheetAt(0);
         } catch (IOException e) {
@@ -37,11 +49,12 @@ class Main {
         for (Row r : s) {
             String nombreEmpresa = r.getCell(0).getStringCellValue();
             if (nombreEmpresa.isEmpty()) break;
-            short período = (short) r.getCell(1).getNumericCellValue();
+            Short período = (short) r.getCell(1).getNumericCellValue();
             String nombreCuenta = r.getCell(2).getStringCellValue();
             float valorCuenta = (float) r.getCell(3).getNumericCellValue();
 
             boolean empresaConocida = empresas.containsKey(nombreEmpresa);
+            períodos.add(período);
             Empresa e = empresaConocida ? empresas.get(nombreEmpresa) : new Empresa(nombreEmpresa);
             Cuenta c = new Cuenta(período, nombreCuenta, valorCuenta);
 

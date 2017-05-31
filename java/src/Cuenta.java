@@ -1,15 +1,15 @@
 class Cuenta {
-    private short período;
+    private Short período;
     private String nombre;
     private float valor;
 
-    Cuenta(short período, String nombre, float valor) {
+    Cuenta(Short período, String nombre, float valor) {
         this.período = período;
         this.nombre = nombre;
         this.valor = valor;
     }
 
-    short getPeríodo() { return período; }
-    public String getNombre() { return nombre; }
-    public float getValor() { return valor; }
+    Short getPeriod() { return período; }
+    String getNombre() { return nombre; }
+    float getValor() { return valor; }
 }
