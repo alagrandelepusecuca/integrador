@@ -5,8 +5,11 @@ import java.io.StringReader;
 import java.util.HashMap;
 
 class Indicador {
+    static private HashMap<String, Indicador> indicadores = new HashMap<>();
     private String nombre;
     private String formula;
+    private Empresa empresa;
+    private int período;
     private StreamTokenizer tokens;
     private int token;
     private float valor;
@@ -16,30 +19,40 @@ class Indicador {
     Indicador(String nombre, String formula) {
         this.nombre = nombre;
         this.formula = formula;
+        indicadores.put(nombre, this);
     }
 
-    Indicador(String nombre, String formula, HashMap<String, Cuenta> cuentas) {
+    Indicador(String nombre, String formula, Empresa empr, int período) {
         this(nombre, formula);
-        calcularValor(cuentas);
+        calcularValor(empr, período);
     }
 
-    void calcularValor(HashMap<String, Cuenta> cuentas) {
-        this.cuentas = cuentas;
-        calcularValor();
+    static Indicador get(String nombre) {
+        return indicadores.get(nombre);
     }
 
-    private void calcularValor() {
+    float calcularValor(Empresa empr, int período) {
+        this.empresa = empr;
+        this.período = período;
+        this.cuentas = empr.obtenerCuentasDelPeríodo(período);
+        return calcularValor();
+    }
+
+    private float calcularValor() {
         Reader reader = new StringReader(formula);
         tokens = new StreamTokenizer(reader);
-        tokens.ordinaryChar(Símbolos.DIVI.aChar());
+
+        for (Símbolos s : Símbolos.values())
+            tokens.ordinaryChar(s.aChar());
 
         getToken();
         valor = expr();
         if (!esToken(Símbolos.FIN))
             genError("error de sintaxis");
+        return valor;
     }
 
-    boolean valida() { return error == null; }
+    boolean esVálido() { return error == null; }
     float valor() { return valor; }
     String error() { return error; }
 
@@ -70,17 +83,20 @@ class Indicador {
     private float factor() {
         float valor = 0;
         if (esToken(Símbolos.NOMBRE)) {
-            boolean cuentaEncontrada = cuentas.containsKey(tokens.sval);
-            if (cuentaEncontrada) valor = cuentas.get(tokens.sval).getValor();
-            else {
-                genError("error por cuenta no encontrada");
-                getToken();
+            String id = tokens.sval;
+            if (indicadores.containsKey(id)) {
+                valor = indicadores.get(id).calcularValor(empresa, período);
+            } else {
+                boolean cuentaEstá = cuentas.containsKey(id);
+                if (cuentaEstá) valor = cuentas.get(id).getValor();
+                else genError("error por cuenta no encontrada");
             }
+            getToken();
         } else if (aceptar(Símbolos.ABRE)) {
             valor = expr();
             esperar(Símbolos.CIERRA);
         } else {
-            genError("factor error");
+            genError("error en parseo de factores");
             getToken();
         }
         return valor;

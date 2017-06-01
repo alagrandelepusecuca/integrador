@@ -9,29 +9,20 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 class Main {
-    private HashSet<Short> períodos = new HashSet<>();
+    private HashSet<Integer> períodos = new HashSet<>();
     private HashMap<String, Empresa> empresas = new HashMap<>();
-    private HashMap<String, Indicador> indicadores = new HashMap<>();
     private HashMap<String, Metodología> metodologías = new HashMap<>();
 
     public static void main(String[] args) {
-        Main m = new Main();
-        m.run();
+        new Main().run();
     }
 
     private void run() {
         cargarDatos();
-        agregarIndicador("INET", "INOC+INOD");
-        agregarIndicador("ROE", "(INET-DVD)/CAPT");
-        Empresa e = empresas.entrySet().iterator().next().getValue();
-        Indicador i = indicadores.get("INET");
-        i.calcularValor(e.obtenerCuentasDelPeríodo((short) 2014));
-        assert (i.valida());
-    }
-
-    private void agregarIndicador(String nombre, String formula) {
-        Indicador i = new Indicador(nombre, formula);
-        indicadores.put(i.getNombre(), i);
+        new Indicador("INET", "INOC+INOD");
+        new Indicador("ROE", "(INET-DVD)/CAPT");
+        Empresa empr = empresas.get("Google");
+        System.out.println(Indicador.get("ROE").calcularValor(empr, 2014));
     }
 
     private void cargarDatos() {
@@ -49,7 +40,7 @@ class Main {
         for (Row r : s) {
             String nombreEmpresa = r.getCell(0).getStringCellValue();
             if (nombreEmpresa.isEmpty()) break;
-            Short período = (short) r.getCell(1).getNumericCellValue();
+            int período = (int) r.getCell(1).getNumericCellValue();
             String nombreCuenta = r.getCell(2).getStringCellValue();
             float valorCuenta = (float) r.getCell(3).getNumericCellValue();
 

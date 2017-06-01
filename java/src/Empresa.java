@@ -11,10 +11,10 @@ class Empresa {
 
     void agregarCuenta(Cuenta c) { cuentas.add(c); }
 
-    HashMap<String, Cuenta> obtenerCuentasDelPeríodo(Short period) {
+    HashMap<String, Cuenta> obtenerCuentasDelPeríodo(int period) {
         HashMap<String, Cuenta> cuentasDelPeríodo = new HashMap<>();
         for (Cuenta c : cuentas)
-            if (c.getPeriod().equals(period))
+            if (c.getPeriod() == period)
                 cuentasDelPeríodo.put(c.getNombre(), c);
         return cuentasDelPeríodo;
     }
