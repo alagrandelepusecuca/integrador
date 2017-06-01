@@ -5,14 +5,14 @@ import java.io.StringReader;
 import java.util.HashMap;
 
 class Indicador {
-    static private HashMap<String, Indicador> indicadores = new HashMap<>();
+    static HashMap<String, Indicador> indicadores = new HashMap<>();
     private String nombre;
     private String formula;
     private Empresa empresa;
     private int período;
     private StreamTokenizer tokens;
     private int token;
-    private float valor;
+    private float valor = 0;
     private String error = null;
     private HashMap<String, Cuenta> cuentas;
 
